@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './CreateAccount.module.css';
+const encode = require('querystring');
 
 class CreateAccount extends React.Component {
   constructor(props) {
@@ -24,10 +25,25 @@ class CreateAccount extends React.Component {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({})
+      body: JSON.stringify(request)
     });
 
-    const responseBody = await response.json();
+    if (response.ok) {
+      const queryState = {
+        user_name : username
+      };
+
+      const queryParams = {
+        client_id : '90bb1e9b33d9402b887b698376c36715',
+        response_type : 'code',
+        redirect_uri :  'http://127.0.0.1:3000/CompleteAccount',
+        state : encode.stringify(queryState)
+      };
+
+      const paramString = encode.stringify(queryParams);
+
+      window.location.replace(`https://accounts.spotify.com/authorize?${paramString}`);
+    }
   }
   
   render() {
