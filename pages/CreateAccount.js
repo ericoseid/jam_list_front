@@ -43,6 +43,21 @@ class CreateAccount extends React.Component {
       const paramString = encode.stringify(queryParams);
 
       window.location.replace(`https://accounts.spotify.com/authorize?${paramString}`);
+    } else {
+      if (response.status == 470) {
+        console.log(response.status);
+        const errMessage = document.getElementById('existingUsernameError');
+
+        errMessage.setAttribute('class', styles.error);
+      } else if (response.status == 471) {
+        const errMessage = document.getElementById('existingEmailError');
+
+        errMessage.setAttribute('class', styles.error);
+      } else {
+        const errMessage = document.getElementById('internalError');
+
+        errMessage.setAttribute('class', styles.error);
+      }
     }
   }
   
@@ -67,6 +82,9 @@ class CreateAccount extends React.Component {
         <br />
         <input type='password' name='confirmPassword'/>
         <br />
+        <p id='existingUsernameError' className={styles.hiddenError}>Username is already taken</p>
+        <p id='existingEmailError' className={styles.hiddenError}>Email is already taken</p>
+        <p id='internalError' className={styles.hiddenError}>Something went wrong. Please try again in a moment</p>
         <button className={styles.createAccount} onClick={this.onCreateAccount}>Create Account</button>
       </div>
     );

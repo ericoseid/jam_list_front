@@ -13,3 +13,12 @@
 .main {
   text-align: center;
 }
+
+.error {
+  font-family: Ubuntu Mono;
+  color: red;
+}
+
+.hiddenError {
+  display: none;
+}
