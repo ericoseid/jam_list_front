@@ -7,12 +7,41 @@ class CreateAccount extends React.Component {
     super(props);
 
     this.onCreateAccount = this.onCreateAccount.bind(this);
+    this.validateInputs = this.validateInputs.bind(this);
+  }
+
+  validateInputs(username, email, password, passwordConfirm) {
+    if (username === '') {
+      document.getElementById('usernameNotPresentError').setAttribute('class', styles.error);
+
+      return false;
+    } else if (email === '') {
+      document.getElementById('emailNotPresentError').setAttribute('class', styles.error);
+
+      return false;
+    } else if (password === '' || passwordConfirm === '') {
+      document.getElementById('passwordNotPresentError').setAttribute('class', styles.error);
+
+      return false;
+    } else if (password != passwordConfirm) {
+      document.getElementById('passwordMismatchError').setAttribute('class', styles.error);
+
+      return false;
+    }
+
+    return true;
   }
 
   async onCreateAccount() {
     const username = document.getElementById('usernameId').value;
     const email = document.getElementById('emailId').value;
     const password = document.getElementById('passwordId').value; 
+    const confirmPassword = document.getElementById('confirmPasswordId').value;
+
+    if (!this.validateInputs(username, email, password, confirmPassword)) {
+      return;
+    }
+    
 
     const request = {
       user_name : username,
@@ -80,11 +109,15 @@ class CreateAccount extends React.Component {
         <br />
         <label className={styles.labels} htmlFor='confirmPassword'>Confirm Password</label> 
         <br />
-        <input type='password' name='confirmPassword'/>
+        <input type='password' name='confirmPassword' id='confirmPasswordId'/>
         <br />
         <p id='existingUsernameError' className={styles.hiddenError}>Username is already taken</p>
         <p id='existingEmailError' className={styles.hiddenError}>Email is already taken</p>
         <p id='internalError' className={styles.hiddenError}>Something went wrong. Please try again in a moment</p>
+        <p id='usernameNotPresentError' className={styles.hiddenError}>Please enter a username</p>
+        <p id='emailNotPresentError' className={styles.hiddenError}>Please enter password</p>
+        <p id='passwordNotPresentError' className={styles.hiddenError}>Please enter a password</p>
+        <p id='passwordMismatchError' className={styles.hiddenError}>Passwords do not match</p>
         <button className={styles.createAccount} onClick={this.onCreateAccount}>Create Account</button>
       </div>
     );
