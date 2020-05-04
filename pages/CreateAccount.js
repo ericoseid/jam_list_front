@@ -1,10 +1,12 @@
 import React from 'react';
 import styles from './CreateAccount.module.css';
-const encode = require('querystring');
+const encode = require('querystring-browser');
 
 class CreateAccount extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {errorMessage : undefined}
 
     this.onCreateAccount = this.onCreateAccount.bind(this);
     this.validateInputs = this.validateInputs.bind(this);
@@ -12,19 +14,27 @@ class CreateAccount extends React.Component {
 
   validateInputs(username, email, password, passwordConfirm) {
     if (username === '') {
-      document.getElementById('usernameNotPresentError').setAttribute('class', styles.error);
+      this.setState({
+        errorMessage : <p className={styles.error}>Please Enter a Username</p>
+      });
 
       return false;
     } else if (email === '') {
-      document.getElementById('emailNotPresentError').setAttribute('class', styles.error);
+      this.setState({
+        errorMessage : <p className={styles.error}>Please Enter an email</p>
+      });
 
       return false;
     } else if (password === '' || passwordConfirm === '') {
-      document.getElementById('passwordNotPresentError').setAttribute('class', styles.error);
+      this.setState({
+        errorMessage : <p className={styles.error}>Please Enter and Confirm your Password</p>
+      });
 
       return false;
     } else if (password != passwordConfirm) {
-      document.getElementById('passwordMismatchError').setAttribute('class', styles.error);
+      this.setState({
+        errorMessage : <p className={styles.error}>Passwords do not match</p>
+      });
 
       return false;
     }
@@ -33,6 +43,10 @@ class CreateAccount extends React.Component {
   }
 
   async onCreateAccount() {
+    this.setState(
+      {errorMessage : undefined}
+    );
+
     const username = document.getElementById('usernameId').value;
     const email = document.getElementById('emailId').value;
     const password = document.getElementById('passwordId').value; 
@@ -41,7 +55,6 @@ class CreateAccount extends React.Component {
     if (!this.validateInputs(username, email, password, confirmPassword)) {
       return;
     }
-    
 
     const request = {
       user_name : username,
@@ -66,7 +79,8 @@ class CreateAccount extends React.Component {
         client_id : '90bb1e9b33d9402b887b698376c36715',
         response_type : 'code',
         redirect_uri :  'http://127.0.0.1:3000/CompleteAccount',
-        state : encode.stringify(queryState)
+        state : encode.stringify(queryState),
+        scope : encode.escape('playlist-modify-public playlist-modify-private')
       };
 
       const paramString = encode.stringify(queryParams);
@@ -74,20 +88,19 @@ class CreateAccount extends React.Component {
       window.location.replace(`https://accounts.spotify.com/authorize?${paramString}`);
     } else {
       if (response.status == 470) {
-        console.log(response.status);
-        const errMessage = document.getElementById('existingUsernameError');
-
-        errMessage.setAttribute('class', styles.error);
+        this.setState({
+          errorMessage : <p className={styles.error}>Username is Already Taken</p>
+        });
       } else if (response.status == 471) {
-        const errMessage = document.getElementById('existingEmailError');
-
-        errMessage.setAttribute('class', styles.error);
+        this.setState({
+          errorMessage : <p className={styles.error}>Email is Already Taken</p>
+        });
       } else {
-        const errMessage = document.getElementById('internalError');
-
-        errMessage.setAttribute('class', styles.error);
+        this.setState({
+          errorMessage : <p className={styles.error}>Something went wrong, please try again in some time</p>
+        });
       }
-    }
+    } 
   }
   
   render() {
@@ -111,13 +124,9 @@ class CreateAccount extends React.Component {
         <br />
         <input type='password' name='confirmPassword' id='confirmPasswordId'/>
         <br />
-        <p id='existingUsernameError' className={styles.hiddenError}>Username is already taken</p>
-        <p id='existingEmailError' className={styles.hiddenError}>Email is already taken</p>
-        <p id='internalError' className={styles.hiddenError}>Something went wrong. Please try again in a moment</p>
-        <p id='usernameNotPresentError' className={styles.hiddenError}>Please enter a username</p>
-        <p id='emailNotPresentError' className={styles.hiddenError}>Please enter password</p>
-        <p id='passwordNotPresentError' className={styles.hiddenError}>Please enter a password</p>
-        <p id='passwordMismatchError' className={styles.hiddenError}>Passwords do not match</p>
+        {undefined}
+        {this.state.errorMessage}
+        <br />
         <button className={styles.createAccount} onClick={this.onCreateAccount}>Create Account</button>
       </div>
     );
