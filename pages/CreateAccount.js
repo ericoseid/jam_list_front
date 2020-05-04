@@ -106,6 +106,13 @@ class CreateAccount extends React.Component {
   render() {
     return (
       <div className={styles.main}>
+        <style global jsx>
+          {`
+            body {
+              background-color : Aquamarine;
+            }
+           `}
+        </style>
         <h1 className={styles.title}>JamList</h1>
         <br />
         <label className={styles.labels} htmlFor='username'>Username</label> 
@@ -124,7 +131,6 @@ class CreateAccount extends React.Component {
         <br />
         <input type='password' name='confirmPassword' id='confirmPasswordId'/>
         <br />
-        {undefined}
         {this.state.errorMessage}
         <br />
         <button className={styles.createAccount} onClick={this.onCreateAccount}>Create Account</button>
